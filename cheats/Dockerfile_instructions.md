@@ -79,7 +79,7 @@ docker image inspect `<image-name/id>` ***(inspect the docker image)***
 `<container_id>`{=html} --filter='{{json.Config.ExposedPorts}}' 
 4. docker inspect `<container_id>`--filter='{{json.NetworkSettings.IPAddress}}"
 
-***COPY***
+## ***COPY***
 
 Used to copy files or directories from the source and add them to the
 filesystem of the images at mentioned path
@@ -91,7 +91,7 @@ files and directories can be copied from..
     d. an image
 
 
-***ADD***
+## ***ADD***
 
 Used to copy files from the source to images destination
 files and directories can be copied from.. 
@@ -110,5 +110,42 @@ files and directories can be copied from..
 >       | Security      |safer for local copy |  Risk in URL Fetch** 
 >       | USE Case      | Local Copy          | URL & Tar Copy
 
+## ***ARG***
+Used to define the build-time variables. In the final image these variables are not present.
+* We can use 1 (or) more ARG instructions.
+* ENV overrides the ARG.
+* Can be overridden at build stage by passing <^>--build-arg<^>
 
+  __***syntax***__
+docker build --build-arg<variable_name>= <value>
+### Examples
+> ARG NGINX_VERSION=1.26 \
+FROM nginx:${NGINX_VERSION}-alpine-slim \
+LABEL org.opencontainers.image.author="Gokul Vootla"\
+LABEL org.opencontainers.image.version="1.0" \
+COPY index.html /usr/share/nginx/html
+
+***Building the above Dockerfile***
+
+     docker build -t args_demo . 
+
+***Nginx Version***
+
+    docker exec -it args_demo nginx -v
+
+***Overriding ARG***
+
+    docker build --build-arg NGINX_VERSION=1.27.0 -t overriden_args:v1 .
+
+## ***ENV***
+Sets Environmental variables && can be accessible at build as well as run times.
+Helps to configure container's environment. ENV's persists in the final image. 
+Can influence the behavior of running container.
+
+ __***syntax***__
+ENV NAME="Gokul" 
+ENV SCHOOL=ABC\ Public\ school
+
+* *Insingle line we can also declare,*
+   > ENV NAME="Gokul" SCHOOL=ABC\ Public \school
 
