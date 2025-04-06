@@ -146,6 +146,88 @@ Can influence the behavior of running container.
 ENV NAME="Gokul" 
 ENV SCHOOL=ABC\ Public\ school
 
-* *Insingle line we can also declare,*
+* single line declaration,
    > ENV NAME="Gokul" SCHOOL=ABC\ Public \school
+
+### ***ARG vs ENV***
+        |   Feature     |      ARG             |      ENV               |
+        |    Scope      |   Build-time         |    Runtime             |
+        |  Persistence  | Not in final image   | Persist in final image |
+        |   Usage       |  Setting variables   | Setting environmental  | 
+                           durning Build-time        variables     
+        |    syntax     |ARG <name>=[<default>]|   ENV <key>=<value>    | 
+
+### ***ARG and ENV Combined usage***
+* ARG instructions allows to pass variables at build time without modifying the Dockerfile. So, by combining both ENV && ARG we can pass values configured in build process into the runtime environment.
+   > ARG (Build-time customization)
+   > ENV (Runtime customization)
+ * This separation makes Dockerfile flexible at both build and run stages without Overlapping.
+ * On Using ENV, we can setup the sensitive information such as API keys or database credentials 
+ * This combination creates Docker image more reusable and adaptable to various deployment scenarios. 
+
+***Example To  Show combined usage of ENV && ARG***
+ > FROM python:3.12-alpine \
+     LABEL org.opencontainers.image.author="Vootla" \
+     LABEL org.opencontainers.image.version="1.2"  \
+     LABEL org.opencontainers.image.title="Combined usage of ENV and ARG" \
+     ARG ENVIRONMENT=dev \
+     ENV APP_ENVIRONMENT=${ENVIRONMENT}
+     
+***Initially***
+```
+ARG && ENV = dev
+```
+***Overriding ENV from ARG***
+```
+docker build --build-arg ENVIRONMENT=QA -t arg_env .
+
+docker run --name myenv1 -p 8080:80 -d demo-arg:v1 
+
+~~Verifying~~
+
+ docker exec -it myenv1  env|grep APP_ENVIRONMENT   ###APP_ENVIRONMENT=QA 
+```
+*   At Build-time passed parameters gets overridden.
+*   ENV is also parameterized, so it gets the value of ARG
+Then ARG=ENV=QA
+
+***Overriding from ENV***
+
+```
+docker run --name demo2 -p 8070:80 -d demo-arg-env:v1 -e APP_ENVIRONMENT=dev
+
+~~Verifying~~
+
+ docker exec -it myenv1  env|grep APP_ENVIRONMENT   ###APP_ENVIRONMENT=dev
+```
+## ***WORKDIR***
+
+Defines working directory for instructions\
+RUN, CMD, ENTRYPOINT, COPY & ADD.
+
+* Example
+  > WORKDIR /app \
+  > COPY requirements.txt requirements.txt \
+  
+  * Meaning it copies requirement.txt locally to /app/requirements.txt
+ * Using Base image 
+✅, WORKDIR likely to be set by base image itself.
+***Default WORKDIR "/"***
+
+```
+🤔🤔🤔🤔
+what if Dockerfile contains something like ?
+
+WORKDIR /opt
+WORKDIR apps
+WORKDIR myapp1
+RUN PWD
+
+Output: 
+    /opt/apps/myapp1 
+```
+
+
+
+
 
