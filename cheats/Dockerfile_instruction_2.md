@@ -133,3 +133,55 @@ Because CMD's World argument gets overriden by vootla...
 when command run via ENTRYPOINT followed by CMD Then docker automatically assumes that value passed to the CMD is any
 argument ; not a command to be overridden.
 ```
+## ***USER***
+
+Specifies the user under which the subsequent instructions will be executed. 
+* By default, if no USER is specified, then docker will run command as the root user.
+* USER instruction applies only to the RUN, ENTRYPOINT & CMD commands.
+ * Running containers as non-root user enhances the security
+
+***How to create a user?***
+```
+FROM ubuntu:20.04
+RUN useradd -ms /bin/bash myuser
+USER myuser
+
+Here RUN instruction will creates a user called myuser and USER 
+instruction sets myuser as the default user for subsequent instrucitons. 
+```
+***Using UID & GID while specifying the USER***
+```
+FROM ubuntu:20.04
+RUN groupadd -g 1234 newgrp && \
+  useradd -m -u 1234 -g newgrp customer
+USER customer
+```
+***Switching between users***
+```
+USER root
+RUN apt-get update && apt-get install -y curl
+USER myuser 
+```
+## ***HEALTHCHECK***
+Monitor the health of the containerized application.
+* Determines if the application is working correctly.
+* Helps in troubleshooting.
+```
+Command's exit code determines the health status,
+0 = container is healthy
+1 = container is unhealthy
+2 = Reserved by Docker should not be used.
+```
+How to use?
+```
+FROM nginx
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s \
+--retries=3 \
+CMD curl -f http://localhost/ 
+```
+This can detect,
+
+>) web server stuck in a loop
+>) Unable to handle new connections even if container is still running.
+
+
