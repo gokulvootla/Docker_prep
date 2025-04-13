@@ -166,6 +166,17 @@ USER myuser
 Monitor the health of the containerized application.
 * Determines if the application is working correctly.
 * Helps in troubleshooting.
+* This runs inside the container.
+
+This can detect,
+>) web server stuck in a loop \
+>) Unable to handle new connections even if container is still running.
+
+### Health status in Docker
+* Starting: Durning the start
+* Healthy: If Health check passes
+* Unhealthy: Marked after consecutive health check failures.
+
 ```
 Command's exit code determines the health status,
 0 = container is healthy
@@ -179,9 +190,25 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s \
 --retries=3 \
 CMD curl -f http://localhost/ 
 ```
-This can detect,
+* interval(Default:30s): Time between running the Health Checks.
+* timeout(Default:30s): Time the check is run before it is considered to fail.
+* start-period(Default:0s): Intial time before starting health checks.
+* retries(Default:30s): Number of consecutive failures needed to consider the container is unhealthy.
 
->) web server stuck in a loop
->) Unable to handle new connections even if container is still running.
+
+*Note:*
+1) HEALTHCHECK needs curl cmd to be executed to fetch the pulse of the container.
+2) If we are using the base nginx image then HEALTHCHECK would be implemented and if we don't want to use the HEALTHCHECK anymore then, 
+       `HEALTHCHECK NONE`
+3) To see the healthcheck information from the docker image,
+    > `docker image inspect --format= `{{json .Config.Healthcheck}}` <image_name>`
+4) To see the status of health.
+    > `docker inspect --format= `{{json .State.Health}}` <ontainer-id>`
+   
 
 
+
+  
+
+
+  
