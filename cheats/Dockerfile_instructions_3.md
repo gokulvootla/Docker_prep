@@ -47,5 +47,37 @@ CMD ["sleep", "300"]
 ### publishing the port ? 
 EXPOSE will only documents the port, publishing ports will make accessible from the host machine. \
 for that `-p, -P` flags comes into picture.
+* This maps the host port to the container port
+
+### ***-p:***
+This is used for Single-port maping. \
+Direct access to container services via designated host port.
+
+> This links 8090(host-port) to 80(container-port) 
+```
+docker run --name my-port -p 8090:80 -d singleport:v1
+```
+> if the host-port is mentioned then `ephemeral port` is assigned 
+```
+docker run --name ephemeral-demo -p 80 -d singleport:v1
+```
+
+### ***-P:***
+* Used for Multi-port publishing. 
+* Automatically publishes all the exposed ports to random high-numbered host-ports.
+* Host-ports are dynamically assigned.
+
+ > This will map random high numbered host-port  with the container ports that are exposed from the Dockerfile
+```
+docker run --name dynamic-port -P -d multipleport:v1
+```
+
+*Verifying:*
+
+> Filteres the output of `docker ps`
+docker ps --format "table {{.Image}}\t{{.Names}}\t{{.Status}}\t{{.ID}}\t{{.Ports}}" 
+
+
+
 
 
