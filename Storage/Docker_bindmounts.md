@@ -26,4 +26,11 @@ docker run \
    nginx:alpine-slim
 ```
 * Addition/modification of the files inside the container will reflect on the host machine && vice-versa.
-  
+
+*Verify the mounts*
+```
+docker ps
+docker ps --format "table{{.Image}}\t{{.Names}}\t{{.Status}}\t{{.ID}}\t{{.Ports}}"     #formating the output of the docker ps 
+docker inspect bind_mount_1
+docker inspect --format=`{{json .Mounts}} bind_mount_1 | jq
+``` 
