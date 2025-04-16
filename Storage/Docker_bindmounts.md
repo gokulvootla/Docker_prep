@@ -33,4 +33,38 @@ docker ps
 docker ps --format "table{{.Image}}\t{{.Names}}\t{{.Status}}\t{{.ID}}\t{{.Ports}}"     #formating the output of the docker ps 
 docker inspect bind_mount_1
 docker inspect --format=`{{json .Mounts}} bind_mount_1 | jq
-``` 
+```
+
+*target as Non-empty dir scenario using bind mounts*
+```
+docker run --name=mynginx -p 8092:80 -d nginx:alpine-slim
+```
+> docker exec -it mynginx /bin/sh
+> cd /usr/share/nginx/html
+> index.html and other files are present by default
+
+*Attaching the volume mount to the /usr/share/nginx/html*
+```
+docker run --name=nonempty_vol -p 8091:80 --mount type=volume,src=myvol1,dst=/usr/share/nginx/html,readonly -d nginx:alpine-slim
+```
+> docker exec -it nonempty_vol /bin/sh \
+> df -h \
+> /usr/share/nginx/html is mounted as the volume /dev/vda* \
+> no data loss
+
+*Attaching the bind mount to the /usr/share/nginx/html*
+
+```
+docker run --name=nonempty_vol2 -p 8091:80 --mount type=bind,src=/static-content,dst=/usr/share/nginx/html,readonly -d nginx:alpine-slim
+```
+> docker exec -it nonempty_vol2 /bin/sh \
+> df -h \
+> /usr/share/nginx/html is mounted as the overlay \
+> and the old files will be replaced with the files present in the static-content \
+> Data loss 
+
+
+
+   
+
+
